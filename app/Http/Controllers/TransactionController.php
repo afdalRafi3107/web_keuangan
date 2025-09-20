@@ -17,19 +17,19 @@ class TransactionController extends Controller
         $currentYear = Carbon::now()->year;
 
         // ambil semua data transaksi
-        $transaction = DB::select('SELECT t.id, t.description, t.type, t.amount, t.transaction_date, c.name FROM transactions t JOIN categories c ON t.category_id = c.id WHERE t.user_id = ? ORDER BY t.transaction_date DESC', [$userId]);
+        $transactions = DB::select('SELECT t.id, t.description, t.type, t.amount, t.transaction_date, c.name FROM transactions t JOIN categories c ON t.category_id = c.id WHERE t.user_id = ? ORDER BY t.transaction_date DESC', [$userId]);
 
         // ambil semua category yang dibuat oleh user
         $categories = DB::select('SELECT id ,name FROM categories WHERE user_id = ?', [$userId]);
 
         // hitung total pemasukan user (padahal awal bulan udah habis wkwkw)
-        $totalIncome = DB::selectOne('SELECT SUM(amount) as total FROM transaction WHERE user_id = ? AND type = "income" AND MONTH(transaction_date)=? AND YEAR(transaction_date) = ?', [$userId, $currentMonth, $currentYear])->total ?? 0;
+        $totalIncome = DB::selectOne('SELECT SUM(amount) as total FROM transactions WHERE user_id = ? AND type = "income" AND MONTH(transaction_date)=? AND YEAR(transaction_date) = ?', [$userId, $currentMonth, $currentYear])->total ?? 0;
 
         // hitung toal penguaran wkwkwkwkwk
         $totalExpense = DB::selectOne("SELECT SUM(amount) as total FROM transactions WHERE user_id=? AND type = 'expense' AND MONTH(transaction_date)= ? AND YEAR(transaction_date)= ?", [$userId, $currentMonth, $currentYear])->total ?? 0;
 
         return Inertia::render('Dashboard', [
-            'transaction' => $transaction,
+            'transactions' => $transactions,
             'categories' => $categories,
             'stats' => [
                 'income' => $totalIncome,
