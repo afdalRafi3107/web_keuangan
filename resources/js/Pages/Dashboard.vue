@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { Head, useForm } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { Head, router, useForm } from "@inertiajs/vue3";
+import { ref, watch } from "vue";
 
 import Modal from "@/Components/Modal.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -9,13 +9,38 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
+import MonthlyChart from "@/Components/MonthlyChart.vue";
 
 const Props = defineProps({
     transactions: Array,
     categories: Array,
     stats: Object,
+    chartData: Object,
+    currentMonth: Number,
+    currentYear: Number,
 });
 
+//jika fungsi filter data sudah diisi
+
+const updateDashboard = () => {
+    router.get(
+        route("dashboard"),
+        {
+            month: selectedMonth.value,
+            year: selectedYear.value,
+        },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
+};
+
+// state untuk fitur tambahan filter transaksi
+const selectedMonth = ref(Props.currentMonth);
+const selectedYear = ref(Props.currentYear);
+
+watch([selectedMonth, selectedYear], updateDashboard);
 // loadignya lah pokoknya saat proses mambuat ransaksi
 const creatingTransaction = ref(false);
 
@@ -54,6 +79,26 @@ const formatCurrency = (value) => {
         minimumFractionDigits: 0,
     }).format(value);
 };
+
+const months = [
+    { value: 1, name: "Januari" },
+    { value: 2, name: "Februari" },
+    { value: 3, name: "Maret" },
+    { value: 4, name: "April" },
+    { value: 5, name: "Mei" },
+    { value: 6, name: "Juni" },
+    { value: 7, name: "Juli" },
+    { value: 8, name: "Agustus" },
+    { value: 9, name: "September" },
+    { value: 10, name: "Oktober" },
+    { value: 11, name: "November" },
+    { value: 12, name: "Desember" },
+];
+const startYears = 2020;
+const years = ref([]);
+for (let year = startYears; year <= 2040; year++) {
+    years.value.push(year);
+}
 </script>
 
 <template>
@@ -61,7 +106,32 @@ const formatCurrency = (value) => {
 
     <AuthenticatedLayout>
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+                <div
+                    class="bg-white p-4 shadow-sm sm:rounded-lg flex items-center space-x-4"
+                >
+                    <h3 class="font-semibold">Tampilkan Data Bulan:</h3>
+                    <select
+                        v-model="selectedMonth"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                    >
+                        <option
+                            v-for="month in months"
+                            :key="month.value"
+                            :value="month.value"
+                        >
+                            {{ month.name }}
+                        </option>
+                    </select>
+                    <select
+                        v-model="selectedYear"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                    >
+                        <option v-for="year in years" :key="year" :value="year">
+                            {{ year }}
+                        </option>
+                    </select>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div
                         class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6"
@@ -92,6 +162,17 @@ const formatCurrency = (value) => {
                         <p class="text-3xl font-semibold text-blue-600 mt-2">
                             {{ formatCurrency(stats.balance) }}
                         </p>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6"
+                >
+                    <h3 class="text-lg font-medium mb-4">
+                        Grafik Pemasukan vs Pengeluaran Harian
+                    </h3>
+                    <div class="h-96">
+                        <MonthlyChart :chart-data="Props.chartData" />
                     </div>
                 </div>
 
