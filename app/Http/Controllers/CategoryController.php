@@ -13,7 +13,7 @@ class CategoryController extends Controller
     {
         $userId = Auth::id();
 
-        $Categories = DB::select('SELECT id, name FORM categories WHERE user_id=?', [$userId]);
+        $Categories = DB::select('SELECT id, name FROM categories WHERE user_id=?', [$userId]);
 
         return Inertia::render('Categories/Index', ['categories' => $Categories]);
     }
@@ -26,7 +26,7 @@ class CategoryController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        DB::insert('INSERT INTO categories (user_id, name, create_at, update_at) VALUES (?,?,NOW(),NOW()', [$userId, $validated['name']]);
+        DB::insert('INSERT INTO categories (user_id, name, created_at, updated_at) VALUES (?,?,NOW(),NOW())', [$userId, $validated['name']]);
 
         return to_route('categories.index');
     }

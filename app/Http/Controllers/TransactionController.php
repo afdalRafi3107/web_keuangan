@@ -17,7 +17,7 @@ class TransactionController extends Controller
         $currentYear = Carbon::now()->year;
 
         // ambil semua data transaksi
-        $transactions = DB::select('SELECT t.id, t.description, t.type, t.amount, t.transaction_date, c.name FROM transactions t JOIN categories c ON t.category_id = c.id WHERE t.user_id = ? ORDER BY t.transaction_date DESC', [$userId]);
+        $transactions = DB::select('SELECT t.id, t.description, t.type, t.amount, t.transaction_date, c.name as category_name FROM transactions t JOIN categories c ON t.category_id = c.id WHERE t.user_id = ? ORDER BY t.transaction_date DESC', [$userId]);
 
         // ambil semua category yang dibuat oleh user
         $categories = DB::select('SELECT id ,name FROM categories WHERE user_id = ?', [$userId]);

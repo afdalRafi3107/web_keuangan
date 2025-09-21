@@ -23,8 +23,7 @@ const form = useForm({
     description: "",
     amount: "",
     type: "expense",
-    categories_id: Props.categories.length > 0 ? Props.categories[0].id : null,
-    // categories_id: 1,
+    category_id: Props.categories.length > 0 ? Props.categories[0].id : null,
     transaction_date: new Date().toISOString().slice(0, 10),
 });
 
@@ -40,11 +39,10 @@ const closeModal = () => {
 };
 
 const handleSubmitTransaction = () => {
-    form.post(route("transactions.store")),
-        {
-            preserveScroll: true,
-            onSucces: () => closeModal(),
-        };
+    form.post(route("transaction.store"), {
+        preserveScroll: true,
+        onSuccess: () => closeModal(),
+    });
 };
 
 // format mata uang dengan mata uang negara kita tercinta
@@ -202,7 +200,7 @@ const formatCurrency = (value) => {
                     Tambah Transaksi Baru
                 </h2>
                 <form
-                    @submit.prevent="submitTransaction"
+                    @submit.prevent="handleSubmitTransaction"
                     class="mt-6 space-y-6"
                 >
                     <div>
