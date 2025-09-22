@@ -37,7 +37,7 @@ const submit = () => {
             <div class="relative hidden w-1/2 md:block">
                 <div class="absolute bottom-0 left-0 w-full p-8">
                     <DotLottieVue
-                        style="height: 300px; width: 300px"
+                        style="height: 350px; width: 350px"
                         autoplay
                         loop
                         class="mx-auto"

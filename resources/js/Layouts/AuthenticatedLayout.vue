@@ -23,7 +23,7 @@ const userInitials = computed(() => {
 
 <template>
     <div>
-        <Head :title="$page.props.title || 'Dashboard'" />
+        <Head :title="$page.props.title" />
 
         <div class="min-h-screen bg-gray-100">
             <nav class="bg-white border-b border-gray-100 shadow-sm">
