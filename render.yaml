@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: web_keuangan 
+    env: php
+    plan: free 
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader
+      npm install
+      npm run build
+      php artisan config:cache
+      php artisan route:cache
+      php artisan view:cache
+    startCommand: php artisan serve --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_URL
+        fromService:
+          type: web
+          name: web_keuangan
+          property: url
+      - key: DATABASE_URL 
+        fromService:
+          type: pserv
+          name: web_keuangan
+          property: connectionString
+      - key: APP_KEY
+        sync: false
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+
+  # Service untuk database PostgreSQL
+  - type: pserv
+    name: db-keuangan-saya
+    env: postgres # Paket gratis Render menggunakan PostgreSQL
+    plan: free
+    disk:
+      name: postgres-data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1
